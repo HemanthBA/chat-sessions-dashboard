@@ -1,14 +1,16 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { Box, Typography, CircularProgress, Alert } from '@mui/material';
-import { fetchChatSessions } from './services/api';
-import ChatSessionCard from './components/ChatSessionCard';
-import ChatDetailsModal from './components/ChatDetailsModal';
-import { ChatSession } from './types'; // Ensure ChatSession type is imported
+import React, { useEffect, useState, useCallback } from "react";
+import { Box, Typography, CircularProgress, Alert } from "@mui/material";
+import { fetchChatSessions } from "./services/api";
+import ChatSessionCard from "./components/ChatSessionCard";
+import ChatDetailsModal from "./components/ChatDetailsModal";
+import { ChatSession } from "./types"; // Ensure ChatSession type is imported
 
 const App: React.FC = () => {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [page, setPage] = useState<number>(1);
-  const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null);
+  const [selectedSessionId, setSelectedSessionId] = useState<number | null>(
+    null
+  );
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState<boolean>(true);
@@ -17,16 +19,17 @@ const App: React.FC = () => {
     const loadSessions = async () => {
       setLoading(true);
       try {
-        const data = await fetchChatSessions(page, 20);  // Updated perPage to 20
+        const data = await fetchChatSessions(page, 10); // Updated perPage to 20
         setSessions((prevSessions) => {
           const newSessions = data.chat_sessions.filter(
-            (newSession: ChatSession) => !prevSessions.some((session) => session.id === newSession.id)
+            (newSession: ChatSession) =>
+              !prevSessions.some((session) => session.id === newSession.id)
           );
           return [...prevSessions, ...newSessions];
         });
         setHasMore(page < data.pages);
       } catch (err) {
-        setError('Failed to load sessions. Please try again.');
+        setError("Failed to load sessions. Please try again.");
       }
       setLoading(false);
     };
@@ -46,23 +49,29 @@ const App: React.FC = () => {
   }, [hasMore]);
 
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
   return (
-    <Box display="flex" height="100vh" flexDirection={{ xs: 'column', md: 'row' }}>
+    <Box
+      display="flex"
+      height="100vh"
+      flexDirection={{ xs: "column", md: "row" }}
+    >
       {/* Sidebar for Chat Sessions */}
       <Box
-        width={{ xs: '100%', md: '25%' }}
+        width={{ xs: "100%", md: "25%" }}
         bgcolor="white"
         borderRight={{ md: 1 }}
         borderColor="grey.300"
         overflow="auto"
-        height={{ xs: '50vh', md: '100vh' }}
+        height={{ xs: "50vh", md: "100vh" }}
       >
         <Box p={2} bgcolor="white" color="black">
-          <Typography variant="h5" fontWeight="bold">Messaging</Typography>
+          <Typography variant="h5" fontWeight="bold">
+            Messaging
+          </Typography>
         </Box>
         <Box p={2} display="flex" flexDirection="column">
           {sessions.map((session) => (
@@ -80,18 +89,25 @@ const App: React.FC = () => {
 
       {/* Chat Details Section */}
       <Box
-        width={{ xs: '100%', md: '75%' }}
+        width={{ xs: "100%", md: "75%" }}
         display="flex"
         flexDirection="column"
-        height={{ xs: '50vh', md: '100vh' }}
+        height={{ xs: "50vh", md: "100vh" }}
       >
         {selectedSessionId !== null ? (
           <ChatDetailsModal
-            session={sessions.find((session) => session.id === selectedSessionId)!}
+            session={
+              sessions.find((session) => session.id === selectedSessionId)!
+            }
             onClose={() => setSelectedSessionId(null)}
           />
         ) : (
-          <Box display="flex" flexGrow={1} alignItems="center" justifyContent="center">
+          <Box
+            display="flex"
+            flexGrow={1}
+            alignItems="center"
+            justifyContent="center"
+          >
             <Typography>Select a chat session to view messages</Typography>
           </Box>
         )}
